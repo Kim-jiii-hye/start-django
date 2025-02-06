@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  django-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    container_name: django-dev
+    environment:
+      DJANGO_SETTINGS_MODULE: feature.settings
+      DJANGO_ENV: development
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    command: gunicorn feature.wsgi:application --bind 0.0.0.0:8000 --reload
+    networks:
+      - backend
+    working_dir: /app
+    
+networks:
+  backend:
+    driver: bridge
