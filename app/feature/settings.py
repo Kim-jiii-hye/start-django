@@ -1,22 +1,23 @@
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pathlib import Path
+import sys
 
-# 환경 설정 (기본값은 development)
+# Build paths inside the project like this: BASE_DIR / 'subdir'
+BASE_DIR = Path(__file__).resolve().parent.parent  # app 디렉토리
+PROJECT_ROOT = BASE_DIR.parent  # 프로젝트 루트
+
+# app 디렉토리를 Python 경로에 추가
+sys.path.append(str(PROJECT_ROOT))
+
 ENVIRONMENT = os.environ.get('DJANGO_ENV', 'development')
 
-env_file = f'.env.{ENVIRONMENT}'
-load_dotenv(env_file)
+env_path = BASE_DIR / f'.env.{ENVIRONMENT}'
+load_dotenv(env_path)
 
-# MongoDB 설정
-MONGODB_SETTINGS = {
-    'url': os.getenv('MONGODB_URL'),
-    'db_name': 'subscr_renew'
-}
-
-# MongoDB 클라이언트와 DB 인스턴스 생성
-mongodb_client = MongoClient(MONGODB_SETTINGS['url'])
-db = mongodb_client[MONGODB_SETTINGS['db_name']]
+mongo_uri = os.getenv('MONGO_URI')
+mongo_db = os.getenv('MONGO_DB_SUBSCRIBE')
 
 INSTALLED_APPS = [
     # 기본 앱들
@@ -41,7 +42,7 @@ MIDDLEWARE = [
 ]
 
 # Django 프로젝트의 기본 설정들
-ROOT_URLCONF = 'feature.urls'  # URL 설정 파일의 위치
+ROOT_URLCONF = 'app.feature.urls'  # URL 설정 파일의 위치
 
 # 템플릿 설정도 필요할 수 있습니다
 TEMPLATES = [
@@ -61,7 +62,7 @@ TEMPLATES = [
 ]
 
 # WSGI 애플리케이션 설정
-WSGI_APPLICATION = 'feature.wsgi.application'
+WSGI_APPLICATION = 'app.feature.wsgi.application'
 
 # DEBUG 모드 설정 (개발 환경에서는 True)
 DEBUG = True
@@ -91,3 +92,9 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# MongoDB 설정
+MONGODB_SETTINGS = {
+    'url': mongo_uri,
+    'db_name': mongo_db,
+}
