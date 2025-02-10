@@ -60,7 +60,7 @@ class Subscribe(Document):
     
     meta = {
         'collection': 'usersubscr',
-        'db_alias': 'subscr_renew',
+        'db_name': 'subscr_renew',
         'allow_inheritance': False
     }
     
@@ -70,4 +70,4 @@ class Subscribe(Document):
     
     @classmethod
     def _get_db_name(cls):
-        return cls._meta.get('db_alias', 'subscr_renew')
+        return cls._meta.get('db_name', 'subscr_renew')

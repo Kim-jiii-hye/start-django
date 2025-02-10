@@ -41,16 +41,7 @@ class MongoEngineConnection:
         
         # settings에서 MongoDB 설정 가져오기
         self.mongo_uri = settings.MONGODB_SETTINGS['url']
-        if not self.mongo_uri:
-            raise ValueError("MONGO_URI is not configured in settings")
-            
-        if db_name is None:
-            self.db_name = settings.MONGODB_SETTINGS['subscribe']['db_name']
-            if not self.db_name:
-                raise ValueError("Database name is not configured in settings")
-        else:
-            self.db_name = db_name
-        # models.py의 메타 정보에서 컬렉션 이름 가져오기
+        self.db_name = db_name
         self.collection = collection
         logger.info(f"🔄 MongoDB Settings - DB: {self.db_name}, Collection: {self.collection}")
 
@@ -61,11 +52,17 @@ class MongoEngineConnection:
                 raise ValueError("Database name cannot be empty")
             
             logger.info(f"Attempting to connect to MongoDB: {self.mongo_uri}")
-            connect(db=self.db_name, host=self.mongo_uri, 
-                   serverSelectionTimeoutMS=5000)
+            
+            # 기존 연결 해제 후 새로운 연결 생성
+            disconnect()
+            connect(
+                db=self.db_name,
+                host=self.mongo_uri,
+                serverSelectionTimeoutMS=5000
+            )
 
             # 연결 테스트
-            conn = get_connection(self.db_name)
+            conn = get_connection()
             db = conn.get_database(self.db_name)
             logger.info(f"✅ MongoDB 연결 성공 - DB: {self.db_name}, Collection: {self.collection}")
             return self

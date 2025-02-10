@@ -11,24 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class SubscribeViewSet(viewsets.ViewSet):
-    def list(self, request):
-        with MongoEngineConnection(db_name='subscr_renew'):
-            subscribes = Subscribe.objects.filter(
-                h_id='zxc0585',
-                h_id_media=6
-            ).all()
-            
-            subscribes_json = json.loads(
-                json_util.dumps(
-                    [sub.to_mongo().to_dict() for sub in subscribes]
-                )
-            )
-            
-            return Response({
-                'status': 'success',
-                'data': subscribes_json
-            })
-
+    
     @action(detail=False, methods=['post'])
     def list_by_params(self, request):
         try:

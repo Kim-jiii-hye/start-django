@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from pathlib import Path
 import sys
-from mongoengine import connect, register_connection, disconnect
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'
 BASE_DIR = Path(__file__).resolve().parent.parent  # app 디렉토리
 PROJECT_ROOT = BASE_DIR.parent  # 프로젝트 루트
@@ -105,17 +103,6 @@ MONGODB_SETTINGS = {
     'url': mongo_uri,
     'db_name': mongo_db,
     'subscribe': {
-        'coll_name': 'usersubscr',
         'db_name': 'subscr_renew'
-    }
+    },
 }
-
-# 기존 연결 해제
-disconnect()
-
-# subscr_renew alias로 연결 설정
-connect(
-    db=MONGODB_SETTINGS['subscribe']['db_name'],
-    host=MONGODB_SETTINGS['url'],
-    alias='subscr_renew'
-)
