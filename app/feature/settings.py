@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from pathlib import Path
 import sys
+from mongoengine import connect, register_connection, disconnect
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'
 BASE_DIR = Path(__file__).resolve().parent.parent  # app 디렉토리
@@ -11,13 +12,19 @@ PROJECT_ROOT = BASE_DIR.parent  # 프로젝트 루트
 # app 디렉토리를 Python 경로에 추가
 sys.path.append(str(PROJECT_ROOT))
 
+# 환경 변수 로드
 ENVIRONMENT = os.environ.get('DJANGO_ENV', 'development')
-
-env_path = BASE_DIR / f'.env.{ENVIRONMENT}'
+env_path = PROJECT_ROOT / f'.env.{ENVIRONMENT}'  # 프로젝트 루트의 .env 파일
 load_dotenv(env_path)
 
+# MongoDB 환경 변수
 mongo_uri = os.getenv('MONGO_URI')
+if not mongo_uri:
+    raise ValueError("MONGO_URI environment variable is not set")
+
 mongo_db = os.getenv('MONGO_DB_SUBSCRIBE')
+if not mongo_db:
+    raise ValueError("MONGO_DB_SUBSCRIBE environment variable is not set")
 
 INSTALLED_APPS = [
     # 기본 앱들
@@ -97,4 +104,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MONGODB_SETTINGS = {
     'url': mongo_uri,
     'db_name': mongo_db,
+    'subscribe': {
+        'coll_name': 'usersubscr',
+        'db_name': 'subscr_renew'
+    }
 }
+
+# 기존 연결 해제
+disconnect()
+
+# subscr_renew alias로 연결 설정
+connect(
+    db=MONGODB_SETTINGS['subscribe']['db_name'],
+    host=MONGODB_SETTINGS['url'],
+    alias='subscr_renew'
+)

@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from app.core.db.mongo_odm import MongoEngineConnection
-from .models import Subscribe
+from .models import Subscribe  # Subscribe 모델 import
 import json
 from bson import json_util
+import logging
 
+logger = logging.getLogger(__name__)
 
 class SubscribeViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -51,14 +53,24 @@ class SubscribeViewSet(viewsets.ViewSet):
             
             print(f"🔍 Querying with params - h_id: {h_id}, h_id_media: {h_id_media}")
             
-            with MongoEngineConnection(db_name='subscr_renew'):
+            # 메타 정보 가져오기
+            collection_name = Subscribe._get_collection_name()
+            db_alias = Subscribe._get_db_name()
+            
+            print(f"Using collection: {collection_name}, db_alias: {db_alias}")  # 디버깅용 로그 추가
+            
+            with MongoEngineConnection(db_name=db_alias, collection=collection_name):
                 query = Subscribe.objects.filter(
                     h_id=h_id,
                     h_id_media=h_id_media
                 )
-                print(f"🔍 MongoDB Query: {query._query}")
                 
                 subscribes = query.all()
+                
+                print(f"🔍 DB: {db_alias}")
+                print(f"🔍 Collection: {collection_name}")
+                print(f"🔍 MongoDB Query: {query._query}")
+                print(f"📊 Found {subscribes} documents")
                 print(f"📊 Found {subscribes.count()} documents")
                 
                 subscribes_json = json.loads(

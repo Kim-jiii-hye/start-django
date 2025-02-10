@@ -53,12 +53,21 @@ class Subscribe(Document):
     hashtags = ListField(EmbeddedDocumentField(HashTagObject), required=True)
     scraps = ListField(EmbeddedDocumentField(ScrapObject), required=True)
     reporters = ListField(EmbeddedDocumentField(ReporterObject), required=True)
-    card_log = ListField(EmbeddedDocumentField(CardLogObject), required=True)
+    cards_log = ListField(EmbeddedDocumentField(CardLogObject), required=True)
     orders = ListField(EmbeddedDocumentField(OrdersObject), required=True)
     created_at = DateTimeField(default=datetime.utcnow)
     count = EmbeddedDocumentField(CountObject, required=True)
-
+    
     meta = {
         'collection': 'usersubscr',
-        'db_alias': 'subscr_renew'
+        'db_alias': 'subscr_renew',
+        'allow_inheritance': False
     }
+    
+    @classmethod
+    def _get_collection_name(cls):
+        return cls._meta.get('collection', 'usersubscr')
+    
+    @classmethod
+    def _get_db_name(cls):
+        return cls._meta.get('db_alias', 'subscr_renew')
