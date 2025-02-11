@@ -7,11 +7,38 @@ from .models import Subscribe  # Subscribe 모델 import
 import json
 from bson import json_util
 import logging
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 logger = logging.getLogger(__name__)
 
 class SubscribeViewSet(viewsets.ViewSet):
-    
+  
+    @swagger_auto_schema(
+        operation_description="구독 정보 조회",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['h_id', 'h_id_media'],
+            properties={
+                'h_id': openapi.Schema(type=openapi.TYPE_STRING, description='사용자 ID'),
+                'h_id_media': openapi.Schema(type=openapi.TYPE_INTEGER, description='미디어 ID'),
+            },
+        ),
+        responses={
+            200: openapi.Response(
+                description="Success",
+                examples={
+                    "application/json": {
+                        "status": "success",
+                        "data": []
+                    }
+                }
+            ),
+            400: "Bad Request",
+            500: "Internal Server Error"
+        },
+        tags=['Subscribe']
+    )
     @action(detail=False, methods=['post'])
     def list_by_params(self, request):
         try:

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',  # 이 줄이 있는지 확인
     'corsheaders',     # CORS 설정
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

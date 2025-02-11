@@ -7,3 +7,4 @@ requests>=2.25
 python-dotenv==1.0.0
 pymongo[srv]
 mongoengine
+drf-yasg>=1.21.0
